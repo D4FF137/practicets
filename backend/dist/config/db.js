@@ -16,17 +16,10 @@ exports.default = connectDB;
 const mongoose_1 = __importDefault(require("mongoose"));
 const dotenv_1 = require("dotenv");
 const env_1 = require("./env");
-// Загружаем переменные окружения
 (0, dotenv_1.configDotenv)();
-// Функция для подключения к базе данных
 function connectDB() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            // Проверяем, что переменная окружения DB определена
-            if (!env_1.DB) {
-                throw new Error("Environment variable DB is not defined");
-            }
-            // Подключаемся к базе данных
             yield mongoose_1.default.connect(env_1.DB);
             console.log("Connected to DB");
         }
