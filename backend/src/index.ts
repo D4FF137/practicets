@@ -3,7 +3,7 @@ import cors from 'cors';
 import connectDB from './config/db'; 
 import router from './routes/index'; 
 import { PORT } from './config/env';
-import { DB } from './config/env' 
+import { DB } from './config/env'; 
 
 connectDB();
 const app = express();
