@@ -26,20 +26,32 @@ export default class UserController {
     static async create(req: Request, res: Response) {
         try {
             const validatedData = userValidationSchema.parse(req.body);
+    
             const roleExists: IRole | null = await Role.findOne({ roleID: validatedData.roleID });
             if (!roleExists) {
                 return res.status(404).json({ error: 'Роль с указанным ID не найдена' });
             }
+    
             const hashedPassword = await bcrypt.hash(validatedData.password as string, 5);
-            const user = new User({
+    
+                const user = new User({
                 email: validatedData.email,
                 username: validatedData.username,
                 phone: validatedData.phone,
                 password: hashedPassword,
                 roleID: validatedData.roleID,
             });
+    
             const savedUser = await user.save();
-            return res.status(201).json({ msg: 'Пользователь успешно создан' });
+    
+            const payload = {
+                _id: savedUser._id,
+                username: savedUser.username,
+                roleID: savedUser.roleID,
+            };
+            const token = await jwt.sign(payload, process.env.SECRET as string, { expiresIn: '10h' });
+    
+            return res.status(201).json({ msg: 'Пользователь успешно создан', token });
         } catch (error) {
             if (error instanceof z.ZodError) {
                 return res.status(400).json({ errors: error.errors });
@@ -63,6 +75,7 @@ export default class UserController {
             const payload = {
                 _id: user._id,
                 username: user.username,
+                roleID: user.roleID
             };
             const token = await jwt.sign(payload, process.env.SECRET as string, { expiresIn: '10h' });
             return res.status(200).json({ ...user.toObject(), token });
