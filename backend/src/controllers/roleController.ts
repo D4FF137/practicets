@@ -1,21 +1,16 @@
 import { Request, Response } from 'express';
 import Role, { IRole } from "../models/Role";
-import bcrypt from "bcrypt";
-import jwt from 'jsonwebtoken';
-import { configDotenv } from 'dotenv';
 import { z } from 'zod';
 
-configDotenv()
-
-const roleValdiationSchema = z.object({
+const roleValidationSchema = z.object({
     roleID: z.number(),
     roleName: z.string().min(3).max(15)
-})
+});
 
-export default class roleController{
+export default class roleController {
     static async create(req: Request, res: Response) {
         try {
-            const validatedData = roleValdiationSchema.parse(req.body);
+            const validatedData = roleValidationSchema.parse(req.body);
 
             const role = new Role({
                 roleID: validatedData.roleID,
@@ -24,13 +19,80 @@ export default class roleController{
 
             await role.save();
 
-            return res.status(201).json({msg: 'Роль создана'})
+            return res.status(201).json({ msg: 'Роль создана' });
         } catch (error) {
-        if (error instanceof z.ZodError) {
-            return res.status(400).json({ errors: error.errors })
+            if (error instanceof z.ZodError) {
+                return res.status(400).json({ errors: error.errors });
+            }
+            console.error(error);
+            return res.status(500).json({ error: 'Ошибка сервера' });
         }
-        console.error(error);
-        return res.status(500).json({error: 'Ошибка сервера'})    
+    }
+
+    static async readAll(req: Request, res: Response) {
+        try {
+            const roles = await Role.find();
+            return res.status(200).json(roles);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: 'Ошибка сервера' });
+        }
+    }
+
+    static async readOne(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            const role = await Role.findOne({ roleID: id });
+
+            if (!role) {
+                return res.status(404).json({ error: 'Роль не найдена' });
+            }
+
+            return res.status(200).json(role);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: 'Ошибка сервера' });
+        }
+    }
+
+    static async update(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            const validatedData = roleValidationSchema.parse(req.body);
+
+            const updatedRole = await Role.findOneAndUpdate(
+                { roleID: id },
+                { roleName: validatedData.roleName },
+                { new: true }
+            );
+
+            if (!updatedRole) {
+                return res.status(404).json({ error: 'Роль не найдена' });
+            }
+
+            return res.status(200).json({ msg: 'Роль обновлена', role: updatedRole });
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return res.status(400).json({ errors: error.errors });
+            }
+            console.error(error);
+            return res.status(500).json({ error: 'Ошибка сервера' });
+        }
+    }
+
+    static async delete(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            const deletedRole = await Role.findOneAndDelete({ roleID: id });
+
+            if (!deletedRole) {
+                return res.status(404).json({ error: 'Роль не найдена' });
+            }
+
+            return res.status(200).json({ msg: 'Роль удалена', role: deletedRole });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: 'Ошибка сервера' });
         }
     }
 }
