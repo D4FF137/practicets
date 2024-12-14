@@ -4,7 +4,7 @@ import { authMiddleware, adminMiddleware, hostesMiddleware } from "../middleware
 
 const roleRouter = Router();
 
-roleRouter.post('/create', authMiddleware, adminMiddleware, RoleController.create);
+roleRouter.post('/create', RoleController.create);
 roleRouter.get('/readall', authMiddleware, adminMiddleware, RoleController.readAll);
 roleRouter.get('/read/:id', authMiddleware, adminMiddleware, RoleController.readOne);
 roleRouter.put('/update/:id', authMiddleware, adminMiddleware, RoleController.update);

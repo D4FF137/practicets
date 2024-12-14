@@ -150,11 +150,15 @@ export default class UserController {
     static async delete(req: Request, res: Response) {
         try {
             const { id } = req.params;
-            const deletedUser = await User.findByIdAndDelete(id).select('-password');
-            if (!deletedUser) {
+            const user = await User.findById(id);
+    
+            if (!user) {
                 return res.status(404).json({ error: 'Пользователь не найден' });
             }
-            return res.status(200).json({ msg: 'Пользователь удален', user: deletedUser });
+    
+            await user.deleteOne();
+    
+            return res.status(200).json({ msg: 'Пользователь удален', user });
         } catch (error) {
             console.error(error);
             return res.status(500).json({ error: 'Ошибка сервера' });

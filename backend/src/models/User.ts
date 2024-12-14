@@ -1,4 +1,5 @@
 import mongoose, { Document, Model } from "mongoose";
+import Booking from "./Booking";
 
 export interface IUser extends Document {
     username: string;
@@ -35,6 +36,11 @@ const userSchema = new mongoose.Schema<IUser>({
     },
 });
 
+userSchema.pre('deleteOne', { document: true, query: false }, async function (next) {
+    const user = this as IUser;
+    await Booking.deleteMany({user: user._id});
+    next();
+});
 
 const User: Model<IUser> = mongoose.model<IUser>('User', userSchema);
 
