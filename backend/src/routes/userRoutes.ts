@@ -83,6 +83,30 @@ userRouter.get('/readall', authMiddleware, hostesMiddleware, UserController.read
 
 /**
  * @swagger
+ * /user/read/{username}:
+ *   get:
+ *     summary: Получить пользователя по username
+ *     description: Возвращает пользователя по указанному username.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: username
+ *         required: true
+ *         schema:
+ *           type: string
+ *           description: Username пользователя
+ *     responses:
+ *       200:
+ *         description: Пользователь найден
+ *       401:
+ *         description: Пользователь не авторизован
+ *       404:
+ *         description: Пользователь не найден
+ */
+userRouter.get('/read/:username', authMiddleware, hostesMiddleware, UserController.readByUsername);
+/**
+ * @swagger
  * /user/read/{id}:
  *   get:
  *     summary: Получить пользователя по ID
@@ -105,6 +129,8 @@ userRouter.get('/readall', authMiddleware, hostesMiddleware, UserController.read
  *         description: Пользователь не найден
  */
 userRouter.get('/read/:id', authMiddleware, hostesMiddleware, UserController.readOne);
+
+
 
 /**
  * @swagger
@@ -175,5 +201,48 @@ userRouter.put('/update/:id', authMiddleware, adminMiddleware, UserController.up
  *         description: Пользователь не найден
  */
 userRouter.delete('/delete/:id', authMiddleware, adminMiddleware, UserController.delete);
+
+/**
+ * @swagger
+ * /user/change-password/{id}:
+ *   post:
+ *     summary: Сменить пароль пользователя
+ *     description: Позволяет пользователю сменить свой пароль.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           description: ID пользователя (ObjectId)
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *                 description: Текущий пароль пользователя
+ *               newPassword:
+ *                 type: string
+ *                 description: Новый пароль пользователя
+ *               confirmNewPassword:
+ *                 type: string
+ *                 description: Подтверждение нового пароля
+ *     responses:
+ *       200:
+ *         description: Пароль успешно изменен
+ *       400:
+ *         description: Неверные данные
+ *       401:
+ *         description: Неверный текущий пароль
+ *       404:
+ *         description: Пользователь не найден
+ */
+userRouter.post('/change-password/:id', authMiddleware, UserController.changePassword);
 
 export default userRouter;

@@ -5,9 +5,21 @@ import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
 import { configDotenv } from 'dotenv';
 import { z } from 'zod';
+import mongoose from 'mongoose';
 
 configDotenv();
 
+const changePasswordSchema = z.object({
+    currentPassword: z.string().min(8),
+    newPassword: z.string().min(8).regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+        'Пароль должен содержать латинские буквы (верхний и нижний регистр), цифры и хотя бы один спецсимвол (@$!%*?&)'
+    ),
+    confirmNewPassword: z.string().min(8),
+}).refine((data) => data.newPassword === data.confirmNewPassword, {
+    message: 'Новый пароль и подтверждение не совпадают',
+    path: ['confirmNewPassword'],
+});
 const userValidationSchema = z.object({
     username: z.string().min(5).max(20),
     email: z.string().email(),
@@ -105,12 +117,17 @@ export default class UserController {
     static async readOne(req: Request, res: Response) {
         try {
             const { id } = req.params;
-
+    
+            // Проверка, является ли id корректным ObjectId
+            if (!mongoose.Types.ObjectId.isValid(id)) {
+                return res.status(400).json({ error: 'Некорректный формат ID' });
+            }
+    
             const user = await User.findById(id).select('-password');
             if (!user) {
                 return res.status(404).json({ error: 'Пользователь не найден' });
             }
-
+    
             return res.status(200).json(user);
         } catch (error) {
             console.error(error);
@@ -175,6 +192,57 @@ export default class UserController {
 
             return res.status(200).json({ msg: 'Пользователь удален' });
         } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: 'Ошибка сервера' });
+        }
+    }
+    static async readByUsername(req: Request, res: Response) {
+        try {
+            const { username } = req.params;
+    
+            const user = await User.findOne({ username }).select('-password');
+            if (!user) {
+                return res.status(404).json({ error: 'Пользователь не найден' });
+            }
+    
+            return res.status(200).json(user);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: 'Ошибка сервера' });
+        }
+    }
+    static async changePassword(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            const { currentPassword, newPassword, confirmNewPassword } = req.body;
+    
+            // Валидация данных
+            const validatedData = changePasswordSchema.parse({ currentPassword, newPassword, confirmNewPassword });
+    
+            // Найти пользователя по ID
+            const user = await User.findById(id);
+            if (!user) {
+                return res.status(404).json({ error: 'Пользователь не найден' });
+            }
+    
+            // Проверка текущего пароля
+            const passwordMatch = await bcrypt.compare(validatedData.currentPassword, user.password);
+            if (!passwordMatch) {
+                return res.status(401).json({ msg: 'Текущий пароль неверный' });
+            }
+    
+            // Хеширование нового пароля
+            const hashedPassword = await bcrypt.hash(validatedData.newPassword, 5);
+    
+            // Обновление пароля
+            user.password = hashedPassword;
+            await user.save();
+    
+            return res.status(200).json({ msg: 'Пароль успешно изменен' });
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return res.status(400).json({ errors: error.errors });
+            }
             console.error(error);
             return res.status(500).json({ error: 'Ошибка сервера' });
         }

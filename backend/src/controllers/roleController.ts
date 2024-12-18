@@ -6,7 +6,7 @@ const roleValidationSchema = z.object({
     name: z.string().min(3).max(15)
 });
 
-export default class roleController {
+export default class RoleController {
     static async create(req: Request, res: Response) {
         try {
             const validatedData = roleValidationSchema.parse(req.body);
@@ -40,7 +40,7 @@ export default class roleController {
     static async readOne(req: Request, res: Response) {
         try {
             const { id } = req.params;
-            const role = await Role.findOne({ roleID: id });
+            const role = await Role.findById(id); // Используем findById вместо findOne
 
             if (!role) {
                 return res.status(404).json({ error: 'Роль не найдена' });
@@ -58,7 +58,8 @@ export default class roleController {
             const { id } = req.params;
             const validatedData = roleValidationSchema.parse(req.body);
 
-            const updatedRole = await Role.findOneAndUpdate(
+            const updatedRole = await Role.findByIdAndUpdate(
+                id, // Используем id для поиска
                 { name: validatedData.name },
                 { new: true }
             );
@@ -80,7 +81,7 @@ export default class roleController {
     static async delete(req: Request, res: Response) {
         try {
             const { id } = req.params;
-            const deletedRole = await Role.findOneAndDelete({ roleID: id });
+            const deletedRole = await Role.findByIdAndDelete(id); // Используем findByIdAndDelete
 
             if (!deletedRole) {
                 return res.status(404).json({ error: 'Роль не найдена' });
