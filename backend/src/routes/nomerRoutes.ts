@@ -9,18 +9,25 @@ const nomerRouter = Router();
  * /nomer/create:
  *   post:
  *     summary: Создать номер
- *     description: Создает новый номер.
+ *     description: Создает новый номер с возможностью загрузки изображения.
  *     security:
  *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
  *               nameNomer:
  *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: string
+ *               image:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       201:
  *         description: Номер успешно создан
@@ -76,7 +83,7 @@ nomerRouter.get('/read/:uuid', authMiddleware, hostesMiddleware, NomerController
  * /nomer/update/{uuid}:
  *   put:
  *     summary: Обновить номер
- *     description: Обновляет номер по указанному UUID.
+ *     description: Обновляет номер по указанному UUID с возможностью загрузки нового изображения.
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -88,12 +95,19 @@ nomerRouter.get('/read/:uuid', authMiddleware, hostesMiddleware, NomerController
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
  *               nameNomer:
  *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: string
+ *               image:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       200:
  *         description: Номер успешно обновлен

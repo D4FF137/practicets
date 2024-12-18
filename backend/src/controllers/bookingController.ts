@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Booking, { IBooking } from "../models/Booking";
 import User from "../models/User";
 import Nomer from "../models/Nomer";
+import Role from "../models/Role";
 import { z } from 'zod';
 
 const bookingValidationSchema = z.object({
@@ -24,7 +25,12 @@ export default class BookingController {
                 return res.status(404).json({ error: 'Nomer not found' });
             }
 
-            const hostesses = await User.find({ roleID: 2 });
+            const hostessRole = await Role.findOne({ name: "Хостес" });
+            if (!hostessRole) {
+                return res.status(404).json({ error: "Role 'Хостес' not found" });
+            }
+
+            const hostesses = await User.find({ roleID: hostessRole._id });
             if (hostesses.length === 0) {
                 return res.status(404).json({ error: 'No hostesses available' });
             }

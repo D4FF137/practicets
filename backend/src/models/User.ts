@@ -1,12 +1,13 @@
-import mongoose, { Document, Model } from "mongoose";
+import mongoose, { Document, Model, Schema } from "mongoose";
 import Booking from "./Booking";
+import { IRole } from "./Role";
 
 export interface IUser extends Document {
     username: string;
     email: string;
     phone: string;
     password: string;
-    roleID: number;
+    roleID: IRole['_id'];
 }
 
 const userSchema = new mongoose.Schema<IUser>({
@@ -30,7 +31,7 @@ const userSchema = new mongoose.Schema<IUser>({
         required: true,
     },
     roleID: {
-        type: Number,
+        type: Schema.Types.ObjectId,
         required: true,
         ref: 'Role',
     },

@@ -26,7 +26,8 @@ const userRouter = Router();
  *               password:
  *                 type: string
  *               roleID:
- *                 type: number
+ *                 type: string
+ *                 description: ID роли пользователя (ObjectId)
  *     responses:
  *       201:
  *         description: Пользователь успешно создан
@@ -94,6 +95,7 @@ userRouter.get('/readall', authMiddleware, hostesMiddleware, UserController.read
  *         required: true
  *         schema:
  *           type: string
+ *           description: ID пользователя (ObjectId)
  *     responses:
  *       200:
  *         description: Пользователь найден
@@ -118,6 +120,7 @@ userRouter.get('/read/:id', authMiddleware, hostesMiddleware, UserController.rea
  *         required: true
  *         schema:
  *           type: string
+ *           description: ID пользователя (ObjectId)
  *     requestBody:
  *       required: true
  *       content:
@@ -134,7 +137,8 @@ userRouter.get('/read/:id', authMiddleware, hostesMiddleware, UserController.rea
  *               password:
  *                 type: string
  *               roleID:
- *                 type: number
+ *                 type: string
+ *                 description: ID роли пользователя (ObjectId)
  *     responses:
  *       200:
  *         description: Пользователь успешно обновлен
@@ -161,6 +165,7 @@ userRouter.put('/update/:id', authMiddleware, adminMiddleware, UserController.up
  *         required: true
  *         schema:
  *           type: string
+ *           description: ID пользователя (ObjectId)
  *     responses:
  *       200:
  *         description: Пользователь успешно удален

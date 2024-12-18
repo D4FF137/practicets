@@ -17,9 +17,7 @@ const roleRouter = Router();
  *           schema:
  *             type: object
  *             properties:
- *               roleID:
- *                 type: number
- *               roleName:
+ *               name:
  *                 type: string
  *     responses:
  *       201:
@@ -90,7 +88,7 @@ roleRouter.get('/read/:id', authMiddleware, adminMiddleware, RoleController.read
  *           schema:
  *             type: object
  *             properties:
- *               roleName:
+ *               name:
  *                 type: string
  *     responses:
  *       200:

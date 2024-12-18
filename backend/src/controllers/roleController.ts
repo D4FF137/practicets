@@ -3,8 +3,7 @@ import Role, { IRole } from "../models/Role";
 import { z } from 'zod';
 
 const roleValidationSchema = z.object({
-    roleID: z.number(),
-    roleName: z.string().min(3).max(15)
+    name: z.string().min(3).max(15)
 });
 
 export default class roleController {
@@ -13,8 +12,7 @@ export default class roleController {
             const validatedData = roleValidationSchema.parse(req.body);
 
             const role = new Role({
-                roleID: validatedData.roleID,
-                roleName: validatedData.roleName
+                name: validatedData.name
             });
 
             await role.save();
@@ -61,8 +59,7 @@ export default class roleController {
             const validatedData = roleValidationSchema.parse(req.body);
 
             const updatedRole = await Role.findOneAndUpdate(
-                { roleID: id },
-                { roleName: validatedData.roleName },
+                { name: validatedData.name },
                 { new: true }
             );
 

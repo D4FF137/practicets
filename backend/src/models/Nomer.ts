@@ -1,9 +1,12 @@
 import mongoose, { Document, Model } from "mongoose";
 import {v4 as uuidv4} from 'uuid'
+import { number } from "zod";
 
 export interface INomer extends Document {
     uuidNomer: string;
     nameNomer: string;
+    description: string;
+    price:string;
 }
 
 const nomerSchema = new mongoose.Schema({
@@ -16,6 +19,16 @@ const nomerSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true
+    },
+    description: {
+        type: String
+    },
+    price: {
+        type:String,
+        required:true
+    },
+    image: {
+        type:String,
     }
 });
 
