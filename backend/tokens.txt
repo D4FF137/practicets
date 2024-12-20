@@ -12,5 +12,4 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzYwMGQ4ZDNjNTFkN2E4NjJjN2U2MWE
 смена пароля +
 пароль не показывать +
 номер - описание, цена, фото +
-интерфейсы отдельно
 поиск по юзернейм пользователя +

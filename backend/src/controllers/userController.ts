@@ -6,9 +6,33 @@ import jwt from 'jsonwebtoken';
 import { configDotenv } from 'dotenv';
 import { z } from 'zod';
 import mongoose from 'mongoose';
+import multer from 'multer'
+import path from 'path'
 
 configDotenv();
 
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/avatars/'); 
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + path.extname(file.originalname)); // Уникальное имя файла
+    }
+});
+
+export const upload = multer({
+    storage: storage,
+    limits: { fileSize: 1024 * 1024 * 5 }, 
+    fileFilter: function (req, file, cb) {
+        const filetypes = /jpeg|jpg|png/;
+        const mimetype = filetypes.test(file.mimetype);
+        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+        if (mimetype && extname) {
+            return cb(null, true);
+        }
+        cb(new Error('Только изображения в формате JPEG и PNG разрешены'));
+    }
+});
 const changePasswordSchema = z.object({
     currentPassword: z.string().min(8),
     newPassword: z.string().min(8).regex(
@@ -216,25 +240,20 @@ export default class UserController {
             const { id } = req.params;
             const { currentPassword, newPassword, confirmNewPassword } = req.body;
     
-            // Валидация данных
             const validatedData = changePasswordSchema.parse({ currentPassword, newPassword, confirmNewPassword });
     
-            // Найти пользователя по ID
             const user = await User.findById(id);
             if (!user) {
                 return res.status(404).json({ error: 'Пользователь не найден' });
             }
     
-            // Проверка текущего пароля
             const passwordMatch = await bcrypt.compare(validatedData.currentPassword, user.password);
             if (!passwordMatch) {
                 return res.status(401).json({ msg: 'Текущий пароль неверный' });
             }
     
-            // Хеширование нового пароля
             const hashedPassword = await bcrypt.hash(validatedData.newPassword, 5);
     
-            // Обновление пароля
             user.password = hashedPassword;
             await user.save();
     
@@ -243,6 +262,29 @@ export default class UserController {
             if (error instanceof z.ZodError) {
                 return res.status(400).json({ errors: error.errors });
             }
+            console.error(error);
+            return res.status(500).json({ error: 'Ошибка сервера' });
+        }
+    }
+    static async uploadAvatar(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+    
+            // Проверка, существует ли пользователь
+            const user = await User.findById(id);
+            if (!user) {
+                return res.status(404).json({ error: 'Пользователь не найден' });
+            }
+    
+            // Если файл был загружен, сохраните путь к файлу в пользователе
+            if (req.file) {
+                user.avatar = req.file.path;
+                await user.save();
+                return res.status(200).json({ msg: 'Аватар успешно загружен', avatarPath: req.file.path });
+            } else {
+                return res.status(400).json({ error: 'Файл не был загружен' });
+            }
+        } catch (error) {
             console.error(error);
             return res.status(500).json({ error: 'Ошибка сервера' });
         }

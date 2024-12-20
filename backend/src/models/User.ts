@@ -8,6 +8,7 @@ export interface IUser extends Document {
     phone: string;
     password: string;
     roleID: IRole['_id'];
+    avatar:string;
 }
 
 const userSchema = new mongoose.Schema<IUser>({
@@ -35,6 +36,9 @@ const userSchema = new mongoose.Schema<IUser>({
         required: true,
         ref: 'Role',
     },
+    avatar: {
+        type: String
+    }
 });
 
 userSchema.pre('deleteOne', { document: true, query: false }, async function (next) {

@@ -1,8 +1,16 @@
 import { Router } from "express";
 import UserController from "../controllers/userController";
 import { adminMiddleware, authMiddleware, hostesMiddleware } from "../middleware/authMiddleware";
+import {upload} from '../controllers/userController'
 
 const userRouter = Router();
+
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: API для управления пользователями
+ */
 
 /**
  * @swagger
@@ -10,6 +18,7 @@ const userRouter = Router();
  *   post:
  *     summary: Создать пользователя
  *     description: Создает нового пользователя.
+ *     tags: [Users]
  *     requestBody:
  *       required: true
  *       content:
@@ -42,6 +51,7 @@ userRouter.post('/create', UserController.create);
  *   post:
  *     summary: Авторизация пользователя
  *     description: Авторизует пользователя и возвращает токен.
+ *     tags: [Users]
  *     requestBody:
  *       required: true
  *       content:
@@ -71,6 +81,7 @@ userRouter.post('/login', UserController.login);
  *   get:
  *     summary: Получить всех пользователей
  *     description: Возвращает список всех пользователей.
+ *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -83,10 +94,11 @@ userRouter.get('/readall', authMiddleware, hostesMiddleware, UserController.read
 
 /**
  * @swagger
- * /user/read/{username}:
+ * /user/read/username/{username}:
  *   get:
  *     summary: Получить пользователя по username
  *     description: Возвращает пользователя по указанному username.
+ *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -104,13 +116,15 @@ userRouter.get('/readall', authMiddleware, hostesMiddleware, UserController.read
  *       404:
  *         description: Пользователь не найден
  */
-userRouter.get('/read/:username', authMiddleware, hostesMiddleware, UserController.readByUsername);
+userRouter.get('/read/username/:username', authMiddleware, hostesMiddleware, UserController.readByUsername);
+
 /**
  * @swagger
- * /user/read/{id}:
+ * /user/read/id/{id}:
  *   get:
  *     summary: Получить пользователя по ID
  *     description: Возвращает пользователя по указанному ID.
+ *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -128,9 +142,7 @@ userRouter.get('/read/:username', authMiddleware, hostesMiddleware, UserControll
  *       404:
  *         description: Пользователь не найден
  */
-userRouter.get('/read/:id', authMiddleware, hostesMiddleware, UserController.readOne);
-
-
+userRouter.get('/read/id/:id', authMiddleware, hostesMiddleware, UserController.readOne);
 
 /**
  * @swagger
@@ -138,6 +150,7 @@ userRouter.get('/read/:id', authMiddleware, hostesMiddleware, UserController.rea
  *   put:
  *     summary: Обновить пользователя
  *     description: Обновляет пользователя по указанному ID.
+ *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -183,6 +196,7 @@ userRouter.put('/update/:id', authMiddleware, adminMiddleware, UserController.up
  *   delete:
  *     summary: Удалить пользователя
  *     description: Удаляет пользователя по указанному ID.
+ *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -208,6 +222,7 @@ userRouter.delete('/delete/:id', authMiddleware, adminMiddleware, UserController
  *   post:
  *     summary: Сменить пароль пользователя
  *     description: Позволяет пользователю сменить свой пароль.
+ *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -244,5 +259,79 @@ userRouter.delete('/delete/:id', authMiddleware, adminMiddleware, UserController
  *         description: Пользователь не найден
  */
 userRouter.post('/change-password/:id', authMiddleware, UserController.changePassword);
+
+/**
+ * @swagger
+ * /user/{id}/avatar:
+ *   put:
+ *     summary: Загрузка аватарки пользователя
+ *     description: Позволяет загрузить аватарку пользователю.
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           description: ID пользователя (ObjectId)
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               avatar:
+ *                 type: string
+ *                 format: binary
+ *                 description: Файл аватарки (только JPEG, JPG, PNG, до 5MB)
+ *     responses:
+ *       200:
+ *         description: Аватар успешно загружен
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: Аватар успешно загружен
+ *                 avatarPath:
+ *                   type: string
+ *                   example: uploads/avatars/1698765432109.png
+ *       400:
+ *         description: Файл не был загружен или недопустимый формат
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Файл не был загружен
+ *       404:
+ *         description: Пользователь не найден
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Пользователь не найден
+ *       500:
+ *         description: Ошибка сервера
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Ошибка сервера
+ */
+userRouter.put('/:id/avatar', authMiddleware, upload.single('avatar'), UserController.uploadAvatar);
 
 export default userRouter;

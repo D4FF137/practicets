@@ -10,10 +10,19 @@ const upload = multer({ dest: 'uploads/' });
 
 /**
  * @swagger
+ * tags:
+ *   - name: Promotions
+ *     description: Операции, связанные с промоакциями
+ */
+
+/**
+ * @swagger
  * /promotions/create:
  *   post:
  *     summary: Создать промоакцию
  *     description: Создает новую промоакцию.
+ *     tags:
+ *       - Promotions
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -46,6 +55,8 @@ promotionsRouter.post('/create', authMiddleware, adminMiddleware, upload.single(
  *   get:
  *     summary: Получить все промоакции
  *     description: Возвращает список всех промоакций.
+ *     tags:
+ *       - Promotions
  *     responses:
  *       200:
  *         description: Список промоакций
@@ -58,6 +69,8 @@ promotionsRouter.get('/readall', PromotionsController.readAll);
  *   get:
  *     summary: Получить промоакцию по ID
  *     description: Возвращает промоакцию по указанному ID.
+ *     tags:
+ *       - Promotions
  *     parameters:
  *       - in: path
  *         name: id
@@ -78,6 +91,8 @@ promotionsRouter.get('/read/:id', PromotionsController.readOne);
  *   put:
  *     summary: Обновить промоакцию
  *     description: Обновляет промоакцию по указанному ID.
+ *     tags:
+ *       - Promotions
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -118,6 +133,8 @@ promotionsRouter.put('/update/:id', authMiddleware, adminMiddleware, upload.sing
  *   delete:
  *     summary: Удалить промоакцию
  *     description: Удаляет промоакцию по указанному ID.
+ *     tags:
+ *       - Promotions
  *     security:
  *       - bearerAuth: []
  *     parameters:

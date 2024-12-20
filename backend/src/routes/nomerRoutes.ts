@@ -6,12 +6,21 @@ const nomerRouter = Router();
 
 /**
  * @swagger
+ * tags:
+ *   - name: Номера
+ *     description: Операции, связанные с номерами
+ */
+
+/**
+ * @swagger
  * /nomer/create:
  *   post:
  *     summary: Создать номер
  *     description: Создает новый номер с возможностью загрузки изображения.
  *     security:
  *       - bearerAuth: []
+ *     tags:
+ *       - Номера
  *     requestBody:
  *       required: true
  *       content:
@@ -46,6 +55,8 @@ nomerRouter.post('/create', authMiddleware, hostesMiddleware, NomerController.cr
  *     description: Возвращает список всех номеров.
  *     security:
  *       - bearerAuth: []
+ *     tags:
+ *       - Номера
  *     responses:
  *       200:
  *         description: Список номеров
@@ -62,6 +73,8 @@ nomerRouter.get('/readall', authMiddleware, hostesMiddleware, NomerController.re
  *     description: Возвращает номер по указанному UUID.
  *     security:
  *       - bearerAuth: []
+ *     tags:
+ *       - Номера
  *     parameters:
  *       - in: path
  *         name: uuid
@@ -86,6 +99,8 @@ nomerRouter.get('/read/:uuid', authMiddleware, hostesMiddleware, NomerController
  *     description: Обновляет номер по указанному UUID с возможностью загрузки нового изображения.
  *     security:
  *       - bearerAuth: []
+ *     tags:
+ *       - Номера
  *     parameters:
  *       - in: path
  *         name: uuid
@@ -128,6 +143,8 @@ nomerRouter.put('/update/:uuid', authMiddleware, hostesMiddleware, NomerControll
  *     description: Удаляет номер по указанному UUID.
  *     security:
  *       - bearerAuth: []
+ *     tags:
+ *       - Номера
  *     parameters:
  *       - in: path
  *         name: uuid

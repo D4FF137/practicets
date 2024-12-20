@@ -6,10 +6,18 @@ const roleRouter = Router();
 
 /**
  * @swagger
+ * tags:
+ *   name: Roles
+ *   description: Управление ролями
+ */
+
+/**
+ * @swagger
  * /role/create:
  *   post:
  *     summary: Создать роль
  *     description: Создает новую роль.
+ *     tags: [Roles]
  *     requestBody:
  *       required: true
  *       content:
@@ -33,6 +41,7 @@ roleRouter.post('/create', RoleController.create);
  *   get:
  *     summary: Получить все роли
  *     description: Возвращает список всех ролей.
+ *     tags: [Roles]
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -49,6 +58,7 @@ roleRouter.get('/readall', authMiddleware, adminMiddleware, RoleController.readA
  *   get:
  *     summary: Получить роль по ID
  *     description: Возвращает роль по указанному ID.
+ *     tags: [Roles]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -73,6 +83,7 @@ roleRouter.get('/read/:id', authMiddleware, adminMiddleware, RoleController.read
  *   put:
  *     summary: Обновить роль
  *     description: Обновляет роль по указанному ID.
+ *     tags: [Roles]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -108,6 +119,7 @@ roleRouter.put('/update/:id', authMiddleware, adminMiddleware, RoleController.up
  *   delete:
  *     summary: Удалить роль
  *     description: Удаляет роль по указанному ID.
+ *     tags: [Roles]
  *     security:
  *       - bearerAuth: []
  *     parameters:

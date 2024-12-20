@@ -1,0 +1,41 @@
+СОЗДАТЬ РОЛЬ
+{
+  "name": "Клиент"
+}
+{
+  "name": "Администратор"
+}
+{
+  "name": "Хостес"
+}
+
+
+
+
+
+СОЗДАТЬ ЮЗЕРА
+клиент
+{
+  "username": "client11",
+  "email": "client11gmail.com",
+  "phone": "+79998864432",
+  "password": "client11@",
+  "roleID": ""
+}
+админ
+{
+  "username": "admin11",
+  "email": "admin11@gmail.com",
+  "phone": "+79998864433",
+  "password": "Admin11@",
+  "roleID": ""
+}
+хостес
+{
+ "username": "hostes11",
+ "email": "hostes11@gmail.com",
+ "phone": "+79998864434",
+ "password": "Hostes11@",
+ "roleID": ""
+}
+

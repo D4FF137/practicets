@@ -5,9 +5,9 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Your API Title',
+      title: 'API для пансионата',
       version: '1.0.0',
-      description: 'Description of your API',
+      description: '',
     },
     servers: [
       {

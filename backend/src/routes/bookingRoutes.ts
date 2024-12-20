@@ -6,10 +6,18 @@ const bookingRouter = Router();
 
 /**
  * @swagger
+ * tags:
+ *   name: Bookings
+ *   description: API для управления бронированиями
+ */
+
+/**
+ * @swagger
  * /booking/create:
  *   post:
  *     summary: Создать бронирование
  *     description: Создает новое бронирование.
+ *     tags: [Bookings]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -39,6 +47,7 @@ bookingRouter.post('/create', authMiddleware, bookingController.create);
  *   get:
  *     summary: Получить все бронирования
  *     description: Возвращает список всех бронирований.
+ *     tags: [Bookings]
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -55,6 +64,7 @@ bookingRouter.get('/readall', authMiddleware, hostesMiddleware, bookingControlle
  *   get:
  *     summary: Получить бронирование по ID
  *     description: Возвращает бронирование по указанному ID.
+ *     tags: [Bookings]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -79,6 +89,7 @@ bookingRouter.get('/read/:id', authMiddleware, hostesMiddleware, bookingControll
  *   put:
  *     summary: Обновить бронирование
  *     description: Обновляет бронирование по указанному ID.
+ *     tags: [Bookings]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -115,6 +126,7 @@ bookingRouter.put('/update/:id', authMiddleware, hostesMiddleware, bookingContro
  *   delete:
  *     summary: Удалить бронирование
  *     description: Удаляет бронирование по указанному ID.
+ *     tags: [Bookings]
  *     security:
  *       - bearerAuth: []
  *     parameters:
